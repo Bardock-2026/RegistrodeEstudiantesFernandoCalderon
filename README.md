@@ -12,4 +12,3 @@ Proyecto Individual RegistroEstudiantes:
 - Se asegura la persistencia automática en JSON al realizar operaciones CRUD, manteniendo la información guardada entre ejecuciones.
 - Se organiza la estructura del proyecto con carpetas y clases separadas, siguiendo buenas prácticas de POO.
 - Se incluye un banner visual en Program.cs con Console.WriteLine simulando una portada del proyecto, mostrando 'Proyecto Individual Fernando Calderon' y 'Registro de Estudiantes'."
-- Se actualiza database.cargardatos en program y se agregam los casos 3,4 y 5 en cliente
