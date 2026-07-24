@@ -112,6 +112,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
             Matricula objMatricula = new Matricula(idEstudiante, idCurso, fecha);
             Database.Matriculas.Add(objMatricula);
+            Database.GuardarMatriculas();
 
             Console.WriteLine("Matrícula creada exitosamente!!");
             Console.ReadLine();
@@ -174,6 +175,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
                 Console.WriteLine("Ingrese la nueva fecha de matrícula (dd/mm/yyyy): ");
                 objMatricula.FechaMatricula = Convert.ToDateTime(Console.ReadLine());
+                Database.GuardarMatriculas();
 
                 Console.WriteLine("Matrícula actualizada exitosamente!!");
             }
@@ -200,6 +202,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
                 if (Console.ReadLine().ToUpper() == "S")
                 {
                     Database.Matriculas.Remove(objMatricula);
+                    Database.GuardarMatriculas();
                     Console.WriteLine("Matrícula eliminada exitosamente!!");
                 }
                 else

@@ -117,6 +117,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
             Profesor objProfesor = new Profesor(nombre, materia, experiencia);
             Database.Profesores.Add(objProfesor);
+            Database.GuardarProfesores();
 
             Console.WriteLine("Profesor creado exitosamente!!");
             Console.ReadLine();
@@ -179,6 +180,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
                 Console.WriteLine("Ingrese los nuevos años de experiencia: ");
                 objProfesor.Experiencia = Convert.ToInt32(Console.ReadLine());
+                Database.GuardarProfesores();
 
                 Console.WriteLine("Profesor actualizado exitosamente!!");
             }
@@ -205,6 +207,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
                 if (Console.ReadLine().ToUpper() == "S")
                 {
                     Database.Profesores.Remove(objProfesor);
+                    Database.GuardarProfesores();
                     Console.WriteLine("Profesor eliminado exitosamente!!");
                 }
                 else

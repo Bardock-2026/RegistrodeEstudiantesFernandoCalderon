@@ -111,6 +111,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
             Curso objCurso = new Curso(nombre, descripcion, duracion);
             Database.Cursos.Add(objCurso);
+            Database.GuardarCursos();
 
             Console.WriteLine("Curso creado exitosamente!!");
             Console.ReadLine();
@@ -173,6 +174,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
                 Console.WriteLine("Ingrese la nueva duración (ej: 12 meses, 1 semestre, 40 horas): ");
                 objCurso.Duracion = Console.ReadLine();
+                Database.GuardarCursos();
 
                 Console.WriteLine("Curso actualizado exitosamente!!");
             }
@@ -199,6 +201,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
                 if (Console.ReadLine().ToUpper() == "S")
                 {
                     Database.Cursos.Remove(objCurso);
+                    Database.GuardarCursos();
                     Console.WriteLine("Curso eliminado exitosamente!!");
                 }
                 else

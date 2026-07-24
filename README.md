@@ -12,3 +12,13 @@ Proyecto Individual RegistroEstudiantes:
 - Se asegura la persistencia automática en JSON al realizar operaciones CRUD, manteniendo la información guardada entre ejecuciones.
 - Se organiza la estructura del proyecto con carpetas y clases separadas, siguiendo buenas prácticas de POO.
 - Se incluye un banner visual en Program.cs con Console.WriteLine simulando una portada del proyecto, mostrando 'Proyecto Individual Fernando Calderon' y 'Registro de Estudiantes'."
+
+24/07/2026
+Fernando Calderon
+Añadidas llamadas a persistencia en Database para todas las entidades del Registro de Estudiantes
+- Clase Estudiante: se agregó Database.GuardarEstudiantes() al crear/modificar registros
+- Clase Profesor: se agregó Database.GuardarProfesores() al crear/modificar registros
+- Clase Curso: se agregó Database.GuardarCursos() al crear/modificar registros
+- Clase Matricula: se agregó Database.GuardarMatriculas() al crear/modificar registros
+
+Con este cambio, cada operación CRUD asegura la persistencia inmediata en el archivo JSON global.

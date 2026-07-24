@@ -118,7 +118,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
             Estudiante objEstudiante = new Estudiante(nombre, edad, carrera);
             Database.Estudiantes.Add(objEstudiante);
-
+            Database.GuardarEstudiantes();
             Console.WriteLine("Estudiante creado exitosamente!!");
             Console.ReadLine();
         }
@@ -180,6 +180,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
                 Console.WriteLine("Ingrese la nueva carrera del estudiante: ");
                 objEstudiante.Carrera = Console.ReadLine();
+                Database.GuardarEstudiantes();
 
                 Console.WriteLine("Estudiante actualizado exitosamente!!");
             }
@@ -206,6 +207,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
                 if (Console.ReadLine().ToUpper() == "S")
                 {
                     Database.Estudiantes.Remove(objEstudiante);
+                    Database.GuardarEstudiantes();
                     Console.WriteLine("Estudiante eliminado exitosamente!!");
                 }
                 else
