@@ -29,30 +29,30 @@ namespace RegistrodeEstudiantesFernandoCalderon.Datos
             // Relación 1 a muchos entre Curso y Estudiante
             modelBuilder.Entity<Curso>()
                 .HasMany(c => c.Estudiantes)
-                .WithOne(e => e.CursoActual)
+                .WithOne(e => e.Curso)   // ✅ antes estaba CursoActual
                 .HasForeignKey(e => e.CursoId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Relación 1 a muchos entre Curso y Profesor
             modelBuilder.Entity<Curso>()
                 .HasMany(c => c.Profesores)
-                .WithOne(p => p.CursoActual)
+                .WithOne(p => p.Curso)   // ✅ antes estaba CursoActual
                 .HasForeignKey(p => p.CursoId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Relación 1 a muchos entre Curso y Matricula
             modelBuilder.Entity<Curso>()
-                .HasMany(c => c.Matriculas)
-                .WithOne(m => m.CursoActual)
-                .HasForeignKey(m => m.IdCurso)
-                .OnDelete(DeleteBehavior.Cascade); // ✅ Mantén cascada aquí
+                 .HasMany(c => c.Matriculas)
+                 .WithOne(m => m.Curso)
+                 .HasForeignKey(m => m.IdCurso)
+                 .OnDelete(DeleteBehavior.Cascade);
 
             // Relación 1 a muchos entre Estudiante y Matricula
             modelBuilder.Entity<Estudiante>()
-                .HasMany(e => e.Matriculas)
-                .WithOne(m => m.EstudianteActual)
+    .            HasMany(e => e.Matriculas)
+                .WithOne(m => m.Estudiante)
                 .HasForeignKey(m => m.IdEstudiante)
-                .OnDelete(DeleteBehavior.Restrict); // 🔴 antes estaba Cascade
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

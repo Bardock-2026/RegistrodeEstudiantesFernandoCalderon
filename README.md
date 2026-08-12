@@ -57,4 +57,12 @@ Implemento CRUD de Matrícula con SQL Server usando ID automático y validación
 
 Verifico que CRUD de Matrícula funciona correctamente con integridad referencial y formato de fecha
 
+Agregada propiedad Curso en clase Matricula y configuradas relaciones en DbContext
+Modificada clase Curso con ICollection para Estudiantes, Profesores y Matriculas
+Actualizado método Imprimir en Curso y Profesor para mostrar curso asignado y relaciones
+CRUD CrearEstudiante modificado para pedir CursoId y asignarlo al estudiante
+CRUD CrearProfesor modificado para pedir CursoId y asignarlo al profesor
+CRUD ListarProfesores actualizado con Include(p => p.Curso) para mostrar curso asignado
+CRUD ListarEstudiantes actualizado con Include(e => e.Curso) y ThenInclude(m => m.Curso) para mostrar curso y matrículas
+Migración AjusteCursoRelaciones creada para sincronizar tablas con nuevas propiedades y claves foráneas
 

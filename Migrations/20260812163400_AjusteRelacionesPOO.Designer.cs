@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RegistrodeEstudiantesFernandoCalderon.Datos;
 
@@ -11,9 +12,11 @@ using RegistrodeEstudiantesFernandoCalderon.Datos;
 namespace RegistrodeEstudiantesFernandoCalderon.Migrations
 {
     [DbContext(typeof(RegistroDBContext))]
-    partial class RegistroDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260812163400_AjusteRelacionesPOO")]
+    partial class AjusteRelacionesPOO
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,21 +146,21 @@ namespace RegistrodeEstudiantesFernandoCalderon.Migrations
 
             modelBuilder.Entity("RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes.Matricula", b =>
                 {
-                    b.HasOne("RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes.Curso", "Curso")
+                    b.HasOne("RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes.Curso", "CursoActual")
                         .WithMany("Matriculas")
                         .HasForeignKey("IdCurso")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes.Estudiante", "Estudiante")
+                    b.HasOne("RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes.Estudiante", "EstudianteActual")
                         .WithMany("Matriculas")
                         .HasForeignKey("IdEstudiante")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Curso");
+                    b.Navigation("CursoActual");
 
-                    b.Navigation("Estudiante");
+                    b.Navigation("EstudianteActual");
                 });
 
             modelBuilder.Entity("RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes.Profesor", b =>

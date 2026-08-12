@@ -1,4 +1,5 @@
-﻿using RegistrodeEstudiantesFernandoCalderon.Datos;
+﻿using Microsoft.EntityFrameworkCore;
+using RegistrodeEstudiantesFernandoCalderon.Datos;
 using RegistrodeEstudiantesFernandoCalderon.Generales;
 using System;
 using System.Collections.Generic;
@@ -13,16 +14,14 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
         private int experiencia; // años de experiencia
         private int id; // Principal
 
-        // Propiedades
+        // Propiedades con validaciones
         public string Nombre
         {
             get => nombre;
             set
             {
-                if (value == null || value.Length == 0)
-                {
+                if (string.IsNullOrWhiteSpace(value))
                     throw new Exception("El nombre del profesor no puede estar vacío.");
-                }
                 nombre = value;
             }
         }
@@ -32,10 +31,8 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             get => materia;
             set
             {
-                if (value == null || value.Length == 0)
-                {
+                if (string.IsNullOrWhiteSpace(value))
                     throw new Exception("La materia no puede estar vacía.");
-                }
                 materia = value;
             }
         }
@@ -46,26 +43,25 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             set
             {
                 if (value < 0)
-                {
                     throw new Exception("La experiencia no puede ser negativa.");
-                }
                 experiencia = value;
             }
         }
 
+        // 🔑 ID principal (SQL lo maneja con IDENTITY)
         public int Id { get => id; set => id = value; }
 
-        // 🔑 Propiedades de navegación (necesarias para RegistroDBContext)
-        public int? CursoId { get; set; }
-        public Curso? CursoActual { get; set; }
+        // 🔑 Propiedades de navegación (EF Core)
+        public int? CursoId { get; set; }       // Clave foránea opcional
+        public Curso? Curso { get; set; }       // Propiedad de navegación
 
         // Constructor principal
         public Profesor(string nombre, string materia, int experiencia)
         {
-            if (nombre == null || nombre.Length == 0)
+            if (string.IsNullOrWhiteSpace(nombre))
                 throw new Exception("El nombre del profesor no puede estar vacío");
 
-            if (materia == null || materia.Length == 0)
+            if (string.IsNullOrWhiteSpace(materia))
                 throw new Exception("La materia no puede estar vacía");
 
             if (experiencia < 0)
@@ -76,7 +72,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             this.Experiencia = experiencia;
         }
 
-        // Constructor vacío (para EF Core o inicialización manual)
+        // Constructor vacío (para EF Core)
         public Profesor() { }
 
         // Método Imprimir
@@ -86,9 +82,13 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine($"Nombre del profesor: {this.Nombre}");
             Console.WriteLine($"Materia: {this.Materia}");
             Console.WriteLine($"Años de experiencia: {this.Experiencia}");
-            Console.WriteLine($"Curso asignado: {(this.CursoActual != null ? this.CursoActual.Nombre : "Sin curso")}");
+
+            string cursoNombre = Curso != null ? Curso.Nombre : "Sin curso";
+            Console.WriteLine($"Curso asignado: {cursoNombre}");
+
             Console.WriteLine("------------------------------------");
         }
+
 
 
 
@@ -108,7 +108,11 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine("Ingrese los años de experiencia: ");
             int experiencia = Convert.ToInt32(Console.ReadLine());
 
+            Console.WriteLine("Ingrese el ID del curso asignado: ");
+            int cursoId = Convert.ToInt32(Console.ReadLine());
+
             Profesor objProfesor = new Profesor(nombre, materia, experiencia);
+            objProfesor.CursoId = cursoId;   // 🔑 asignar curso
 
             using (var context = new RegistroDBContext())
             {
@@ -116,7 +120,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
                 context.SaveChanges(); // ✅ SQL genera automáticamente el ID
             }
 
-            Console.WriteLine("Profesor creado exitosamente!!");
+            Console.WriteLine("Profesor creado exitosamente con curso asignado!!");
             Console.ReadLine();
         }
 
@@ -127,7 +131,11 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
             using (var context = new RegistroDBContext())
             {
-                foreach (Profesor profesor in context.Profesores.ToList())
+                var profesores = context.Profesores
+                    .Include(p => p.Curso)   // 🔑 carga el curso asignado
+                    .ToList();
+
+                foreach (Profesor profesor in profesores)
                 {
                     profesor.Imprimir();
                     Console.WriteLine("_____________________________________");

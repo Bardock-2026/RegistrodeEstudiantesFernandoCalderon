@@ -13,16 +13,14 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
         private DateTime fechaMatricula;
         private int id; // Principal
 
-        // Propiedades
+        // Propiedades con validaciones
         public int IdEstudiante
         {
             get => idEstudiante;
             set
             {
                 if (value <= 0)
-                {
                     throw new Exception("El ID del estudiante debe ser mayor que cero.");
-                }
                 idEstudiante = value;
             }
         }
@@ -33,9 +31,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             set
             {
                 if (value <= 0)
-                {
                     throw new Exception("El ID del curso debe ser mayor que cero.");
-                }
                 idCurso = value;
             }
         }
@@ -48,9 +44,9 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
         public int Id { get => id; set => id = value; }
 
-        // 🔑 Propiedades de navegación (necesarias para EF Core y RegistroDBContext)
-        public Estudiante? EstudianteActual { get; set; }
-        public Curso? CursoActual { get; set; }
+        // 🔑 Propiedades de navegación (EF Core)
+        public Estudiante? Estudiante { get; set; }   // ✅ antes era EstudianteActual
+        public Curso? Curso { get; set; }             // ✅ antes era CursoActual
 
         // Constructor principal
         public Matricula(int idEstudiante, int idCurso, DateTime fechaMatricula)
@@ -66,18 +62,23 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             this.FechaMatricula = fechaMatricula;
         }
 
-        // Constructor vacío (para EF Core o inicialización manual)
+        // Constructor vacío (para EF Core)
         public Matricula() { }
 
         // Método Imprimir
         public void Imprimir()
         {
             Console.WriteLine($"ID Matrícula: {this.Id}");
-            Console.WriteLine($"Estudiante ID: {this.IdEstudiante}");
-            Console.WriteLine($"Curso ID: {this.IdCurso}");
-            Console.WriteLine($"Fecha de matrícula: {this.FechaMatricula.ToShortDateString()}");
+
+            string nombreEstudiante = Estudiante != null ? Estudiante.Nombre : $"ID {this.IdEstudiante}";
+            string nombreCurso = Curso != null ? Curso.Nombre : $"ID {this.IdCurso}";
+
+            Console.WriteLine($"Estudiante: {nombreEstudiante}");
+            Console.WriteLine($"Curso: {nombreCurso}");
+            Console.WriteLine($"Fecha de matrícula: {this.FechaMatricula:dd/MM/yyyy}");
             Console.WriteLine("------------------------------------");
         }
+
 
 
 

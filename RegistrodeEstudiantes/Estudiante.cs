@@ -1,4 +1,5 @@
-﻿using RegistrodeEstudiantesFernandoCalderon.Datos;
+﻿using Microsoft.EntityFrameworkCore;
+using RegistrodeEstudiantesFernandoCalderon.Datos;
 using RegistrodeEstudiantesFernandoCalderon.Generales;
 using System;
 using System.Collections.Generic;
@@ -9,23 +10,20 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
     public class Estudiante
     {
-        // ATRIBUTOS
+        // ATRIBUTOS PRIVADOS
         private string nombre;
         private int edad;
         private string carrera;
         private int id; // Principal
-        private List<Matricula> matriculas; // Relación con Matricula
 
-        // PROPIEDADES
+        // PROPIEDADES CON VALIDACIONES
         public string Nombre
         {
             get => nombre;
             set
             {
-                if (value == null || value.Length == 0)
-                {
+                if (string.IsNullOrWhiteSpace(value))
                     throw new Exception("El nombre del estudiante no puede estar vacío.");
-                }
                 nombre = value;
             }
         }
@@ -36,9 +34,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             set
             {
                 if (value <= 0)
-                {
                     throw new Exception("La edad debe ser mayor que cero.");
-                }
                 edad = value;
             }
         }
@@ -48,31 +44,30 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             get => carrera;
             set
             {
-                if (value == null || value.Length == 0)
-                {
+                if (string.IsNullOrWhiteSpace(value))
                     throw new Exception("La carrera no puede estar vacía.");
-                }
                 carrera = value;
             }
         }
 
+        // 🔑 ID principal (SQL lo maneja con IDENTITY)
         public int Id { get => id; set => id = value; }
 
-        // 🔑 Propiedades de navegación (necesarias para RegistroDBContext)
-        public List<Matricula>? Matriculas { get => matriculas; set => matriculas = value; }
-        public int? CursoId { get; set; }              // Clave foránea
-        public Curso? CursoActual { get; set; }       // Relación con Curso
+        // 🔑 Propiedades de navegación (EF Core)
+        public ICollection<Matricula> Matriculas { get; set; } = new List<Matricula>();
+        public int? CursoId { get; set; }        // Clave foránea opcional
+        public Curso? Curso { get; set; }        // Propiedad de navegación
 
         // CONSTRUCTOR PRINCIPAL
         public Estudiante(string nombre, int edad, string carrera)
         {
-            if (nombre == null || nombre.Length == 0)
+            if (string.IsNullOrWhiteSpace(nombre))
                 throw new Exception("El nombre del estudiante no puede estar vacío.");
 
             if (edad <= 0)
                 throw new Exception("La edad debe ser mayor que cero.");
 
-            if (carrera == null || carrera.Length == 0)
+            if (string.IsNullOrWhiteSpace(carrera))
                 throw new Exception("La carrera no puede estar vacía.");
 
             this.Nombre = nombre;
@@ -81,7 +76,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             this.Matriculas = new List<Matricula>();
         }
 
-        // CONSTRUCTOR VACÍO (para EF Core o inicialización manual)
+        // CONSTRUCTOR VACÍO (para EF Core)
         public Estudiante()
         {
             this.Matriculas = new List<Matricula>();
@@ -99,10 +94,11 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine($"Nombre: {this.Nombre}");
             Console.WriteLine($"Edad: {this.Edad}");
             Console.WriteLine($"Carrera: {this.Carrera}");
-            Console.WriteLine($"Curso asignado: {(this.CursoActual != null ? this.CursoActual.Nombre : "Sin curso")}");
-            Console.WriteLine($"Matrículas registradas: {(this.Matriculas != null ? this.Matriculas.Count : 0)}");
+            Console.WriteLine($"Curso asignado: {(this.Curso != null ? this.Curso.Nombre : "Sin curso")}");
+            Console.WriteLine($"Matrículas registradas: {this.Matriculas.Count}");
             Console.WriteLine("------------------------------------");
         }
+
 
 
         //CRUD
@@ -120,15 +116,19 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine("Ingrese la carrera del estudiante: ");
             string carrera = Console.ReadLine();
 
+            Console.WriteLine("Ingrese el ID del curso asignado: ");
+            int cursoId = Convert.ToInt32(Console.ReadLine());
+
             Estudiante objEstudiante = new Estudiante(nombre, edad, carrera);
+            objEstudiante.CursoId = cursoId;   // 🔑 asignar curso
 
             using (var context = new RegistroDBContext())
             {
                 context.Estudiantes.Add(objEstudiante);
-                context.SaveChanges(); // ✅ SQL genera automáticamente el ID
+                context.SaveChanges(); // ✅ SQL genera automáticamente el ID del estudiante
             }
 
-            Console.WriteLine("Estudiante creado exitosamente!!");
+            Console.WriteLine("Estudiante creado exitosamente con curso asignado!!");
             Console.ReadLine();
         }
 
@@ -139,12 +139,23 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
             using (var context = new RegistroDBContext())
             {
-                foreach (Estudiante estudiante in context.Estudiantes.ToList())
+                var estudiantes = context.Estudiantes
+                    .Include(e => e.Curso)                // curso asignado al estudiante
+                    .Include(e => e.Matriculas)           // matrículas del estudiante
+                        .ThenInclude(m => m.Curso)        // curso de cada matrícula
+                    .ToList();
+
+                foreach (var estudiante in estudiantes)
                 {
                     estudiante.Imprimir();
-                    Console.WriteLine("_____________________________________");
+
+                    foreach (var matricula in estudiante.Matriculas)
+                    {
+                        Console.WriteLine($" - Matrícula en curso: {matricula.Curso?.Nombre ?? "Sin curso"}");
+                    }
                 }
-            }
+            
+        }
             Console.ReadLine();
         }
 
