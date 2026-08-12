@@ -65,4 +65,6 @@ CRUD CrearProfesor modificado para pedir CursoId y asignarlo al profesor
 CRUD ListarProfesores actualizado con Include(p => p.Curso) para mostrar curso asignado
 CRUD ListarEstudiantes actualizado con Include(e => e.Curso) y ThenInclude(m => m.Curso) para mostrar curso y matrículas
 Migración AjusteCursoRelaciones creada para sincronizar tablas con nuevas propiedades y claves foráneas
+Ajustado método Imprimir en clase Matricula para mostrar nombre e ID de Estudiante y Curso junto al listado de matrículas
+
 

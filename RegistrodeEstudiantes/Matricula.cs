@@ -1,4 +1,5 @@
-﻿using RegistrodeEstudiantesFernandoCalderon.Datos;
+﻿using Microsoft.EntityFrameworkCore;
+using RegistrodeEstudiantesFernandoCalderon.Datos;
 using RegistrodeEstudiantesFernandoCalderon.Generales;
 using System;
 using System.Collections.Generic;
@@ -70,15 +71,19 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
         {
             Console.WriteLine($"ID Matrícula: {this.Id}");
 
-            string nombreEstudiante = Estudiante != null ? Estudiante.Nombre : $"ID {this.IdEstudiante}";
-            string nombreCurso = Curso != null ? Curso.Nombre : $"ID {this.IdCurso}";
+            string estudianteInfo = Estudiante != null
+                ? $"{Estudiante.Nombre} (ID {this.IdEstudiante})"
+                : $"ID {this.IdEstudiante}";
 
-            Console.WriteLine($"Estudiante: {nombreEstudiante}");
-            Console.WriteLine($"Curso: {nombreCurso}");
+            string cursoInfo = Curso != null
+                ? $"{Curso.Nombre} (ID {this.IdCurso})"
+                : $"ID {this.IdCurso}";
+
+            Console.WriteLine($"Estudiante: {estudianteInfo}");
+            Console.WriteLine($"Curso: {cursoInfo}");
             Console.WriteLine($"Fecha de matrícula: {this.FechaMatricula:dd/MM/yyyy}");
             Console.WriteLine("------------------------------------");
         }
-
 
 
 
@@ -135,7 +140,12 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
             using (var context = new RegistroDBContext())
             {
-                foreach (Matricula matricula in context.Matriculas.ToList())
+                var matriculas = context.Matriculas
+                    .Include(m => m.Estudiante) // 🔑 carga estudiante
+                    .Include(m => m.Curso)      // 🔑 carga curso
+                    .ToList();
+
+                foreach (Matricula matricula in matriculas)
                 {
                     matricula.Imprimir();
                     Console.WriteLine("_____________________________________");
