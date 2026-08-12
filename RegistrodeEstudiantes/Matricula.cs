@@ -1,7 +1,8 @@
-﻿using System;
+﻿using RegistrodeEstudiantesFernandoCalderon.Datos;
+using RegistrodeEstudiantesFernandoCalderon.Generales;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using RegistrodeEstudiantesFernandoCalderon.Generales;
 namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 {
     public class Matricula
@@ -77,13 +78,13 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine($"Fecha de matrícula: {this.FechaMatricula.ToShortDateString()}");
             Console.WriteLine("------------------------------------");
         }
-    
 
 
 
-// CRUD
 
-public static void CrearMatricula()
+        // CRUD
+
+        public static void CrearMatricula()
         {
             Console.Clear();
             Console.WriteLine("**********Crear Matrícula**********");
@@ -97,11 +98,32 @@ public static void CrearMatricula()
             Console.WriteLine("Ingrese la fecha de matrícula (dd/mm/yyyy): ");
             DateTime fecha = Convert.ToDateTime(Console.ReadLine());
 
-            Matricula objMatricula = new Matricula(idEstudiante, idCurso, fecha);
-            Database.Matriculas.Add(objMatricula);
-            Database.GuardarMatriculas();
+            // Validar que el estudiante y curso existan
+            using (var context = new RegistroDBContext())
+            {
+                var estudiante = context.Estudiantes.FirstOrDefault(e => e.Id == idEstudiante);
+                var curso = context.Cursos.FirstOrDefault(c => c.Id == idCurso);
 
-            Console.WriteLine("Matrícula creada exitosamente!!");
+                if (estudiante == null)
+                {
+                    Console.WriteLine("Error: El estudiante no existe.");
+                    Console.ReadLine();
+                    return;
+                }
+
+                if (curso == null)
+                {
+                    Console.WriteLine("Error: El curso no existe.");
+                    Console.ReadLine();
+                    return;
+                }
+
+                Matricula objMatricula = new Matricula(idEstudiante, idCurso, fecha);
+                context.Matriculas.Add(objMatricula);
+                context.SaveChanges(); // ✅ Persistencia en SQL
+
+                Console.WriteLine("Matrícula creada exitosamente!!");
+            }
             Console.ReadLine();
         }
 
@@ -109,10 +131,14 @@ public static void CrearMatricula()
         {
             Console.Clear();
             Console.WriteLine("**********Matrículas Registradas**********");
-            foreach (Matricula matricula in Database.Matriculas)
+
+            using (var context = new RegistroDBContext())
             {
-                matricula.Imprimir();
-                Console.WriteLine("_____________________________________");
+                foreach (Matricula matricula in context.Matriculas.ToList())
+                {
+                    matricula.Imprimir();
+                    Console.WriteLine("_____________________________________");
+                }
             }
             Console.ReadLine();
         }
@@ -124,16 +150,20 @@ public static void CrearMatricula()
             Console.WriteLine("Ingrese el ID de la matrícula: ");
             int idIngresado = Convert.ToInt32(Console.ReadLine());
 
-            Matricula objMatricula = Database.Matriculas.Find(m => m.Id == idIngresado);
+            using (var context = new RegistroDBContext())
+            {
+                Matricula objMatricula = context.Matriculas
+                    .FirstOrDefault(m => m.Id == idIngresado);
 
-            if (objMatricula != null)
-            {
-                Console.WriteLine("Matrícula Encontrada!!");
-                objMatricula.Imprimir();
-            }
-            else
-            {
-                Console.WriteLine("Matrícula NO encontrada....");
+                if (objMatricula != null)
+                {
+                    Console.WriteLine("Matrícula Encontrada!!");
+                    objMatricula.Imprimir();
+                }
+                else
+                {
+                    Console.WriteLine("Matrícula NO encontrada....");
+                }
             }
             Console.ReadLine();
         }
@@ -145,30 +175,49 @@ public static void CrearMatricula()
             Console.WriteLine("Ingrese el ID de la matrícula a actualizar: ");
             int idIngresado = Convert.ToInt32(Console.ReadLine());
 
-            Matricula objMatricula = Database.Matriculas.Find(m => m.Id == idIngresado);
-
-            if (objMatricula != null)
+            using (var context = new RegistroDBContext())
             {
-                Console.WriteLine("Matrícula Encontrada!!!");
-                Console.WriteLine("_____________________________________");
-                objMatricula.Imprimir();
-                Console.WriteLine("_____________________________________");
+                Matricula objMatricula = context.Matriculas
+                    .FirstOrDefault(m => m.Id == idIngresado);
 
-                Console.WriteLine("Ingrese el nuevo ID del estudiante: ");
-                objMatricula.IdEstudiante = Convert.ToInt32(Console.ReadLine());
+                if (objMatricula != null)
+                {
+                    Console.WriteLine("Matrícula Encontrada!!!");
+                    Console.WriteLine("_____________________________________");
+                    objMatricula.Imprimir();
+                    Console.WriteLine("_____________________________________");
 
-                Console.WriteLine("Ingrese el nuevo ID del curso: ");
-                objMatricula.IdCurso = Convert.ToInt32(Console.ReadLine());
+                    Console.WriteLine("Ingrese el nuevo ID del estudiante: ");
+                    int nuevoEstudiante = Convert.ToInt32(Console.ReadLine());
 
-                Console.WriteLine("Ingrese la nueva fecha de matrícula (dd/mm/yyyy): ");
-                objMatricula.FechaMatricula = Convert.ToDateTime(Console.ReadLine());
-                Database.GuardarMatriculas();
+                    Console.WriteLine("Ingrese el nuevo ID del curso: ");
+                    int nuevoCurso = Convert.ToInt32(Console.ReadLine());
 
-                Console.WriteLine("Matrícula actualizada exitosamente!!");
-            }
-            else
-            {
-                Console.WriteLine("Matrícula NO encontrada...");
+                    Console.WriteLine("Ingrese la nueva fecha de matrícula (dd/mm/yyyy): ");
+                    DateTime nuevaFecha = Convert.ToDateTime(Console.ReadLine());
+
+                    // Validar existencia
+                    var estudiante = context.Estudiantes.FirstOrDefault(e => e.Id == nuevoEstudiante);
+                    var curso = context.Cursos.FirstOrDefault(c => c.Id == nuevoCurso);
+
+                    if (estudiante == null || curso == null)
+                    {
+                        Console.WriteLine("Error: Estudiante o curso no existen.");
+                    }
+                    else
+                    {
+                        objMatricula.IdEstudiante = nuevoEstudiante;
+                        objMatricula.IdCurso = nuevoCurso;
+                        objMatricula.FechaMatricula = nuevaFecha;
+
+                        context.SaveChanges(); // ✅ Persistencia en SQL
+                        Console.WriteLine("Matrícula actualizada exitosamente!!");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Matrícula NO encontrada...");
+                }
             }
             Console.ReadLine();
         }
@@ -180,26 +229,30 @@ public static void CrearMatricula()
             Console.WriteLine("Ingrese el ID de la matrícula a eliminar: ");
             int idIngresado = Convert.ToInt32(Console.ReadLine());
 
-            Matricula objMatricula = Database.Matriculas.Find(m => m.Id == idIngresado);
-
-            if (objMatricula != null)
+            using (var context = new RegistroDBContext())
             {
-                objMatricula.Imprimir();
-                Console.WriteLine("¿Estás seguro que quieres eliminar esta matrícula? S/N:");
-                if (Console.ReadLine().ToUpper() == "S")
+                Matricula objMatricula = context.Matriculas
+                    .FirstOrDefault(m => m.Id == idIngresado);
+
+                if (objMatricula != null)
                 {
-                    Database.Matriculas.Remove(objMatricula);
-                    Database.GuardarMatriculas();
-                    Console.WriteLine("Matrícula eliminada exitosamente!!");
+                    objMatricula.Imprimir();
+                    Console.WriteLine("¿Estás seguro que quieres eliminar esta matrícula? S/N:");
+                    if (Console.ReadLine().ToUpper() == "S")
+                    {
+                        context.Matriculas.Remove(objMatricula);
+                        context.SaveChanges(); // ✅ Persistencia en SQL
+                        Console.WriteLine("Matrícula eliminada exitosamente!!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Operación cancelada!!");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Operación cancelada!!");
+                    Console.WriteLine("Matrícula NO encontrada!!");
                 }
-            }
-            else
-            {
-                Console.WriteLine("Matrícula NO encontrada!!");
             }
             Console.ReadLine();
         }

@@ -53,3 +53,8 @@ Implemento CRUD de Curso con SQL Server usando ID automático y operaciones por 
 
 Verifico que CRUD de Curso funciona correctamente sin errores de integridad referencial
 
+Implemento CRUD de Matrícula con SQL Server usando ID automático y validación de Estudiante y Curso
+
+Verifico que CRUD de Matrícula funciona correctamente con integridad referencial y formato de fecha
+
+
