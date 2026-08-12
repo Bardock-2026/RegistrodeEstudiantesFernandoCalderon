@@ -47,55 +47,43 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
         public int Id { get => id; set => id = value; }
 
-        // Constructor
+        // 🔑 Propiedades de navegación (necesarias para EF Core y RegistroDBContext)
+        public Estudiante? EstudianteActual { get; set; }
+        public Curso? CursoActual { get; set; }
+
+        // Constructor principal
         public Matricula(int idEstudiante, int idCurso, DateTime fechaMatricula)
         {
             if (idEstudiante <= 0)
-            {
                 throw new Exception("El ID del estudiante debe ser mayor que cero");
-            }
 
             if (idCurso <= 0)
-            {
                 throw new Exception("El ID del curso debe ser mayor que cero");
-            }
 
             this.IdEstudiante = idEstudiante;
             this.IdCurso = idCurso;
             this.FechaMatricula = fechaMatricula;
-
-            if (Database.Matriculas.Count == 0)
-            {
-                this.id = 1;
-            }
-            else
-            {
-                this.id = Database.Matriculas.Max(x => x.Id) + 1;
-            }
         }
+
+        // Constructor vacío (para EF Core o inicialización manual)
+        public Matricula() { }
 
         // Método Imprimir
         public void Imprimir()
         {
-            // Buscar estudiante por ID
-            Estudiante estudiante = Database.Estudiantes.Find(e => e.Id == this.IdEstudiante);
-            string nombreEstudiante = estudiante != null ? estudiante.Nombre : "Estudiante no encontrado";
-
-            // Buscar curso por ID
-            Curso curso = Database.Cursos.Find(c => c.Id == this.IdCurso);
-            string nombreCurso = curso != null ? curso.Nombre : "Curso no encontrado";
-
             Console.WriteLine($"ID Matrícula: {this.Id}");
-            Console.WriteLine($"Estudiante: {nombreEstudiante} (ID {this.IdEstudiante})");
-            Console.WriteLine($"Curso: {nombreCurso} (ID {this.IdCurso})");
+            Console.WriteLine($"Estudiante ID: {this.IdEstudiante}");
+            Console.WriteLine($"Curso ID: {this.IdCurso}");
             Console.WriteLine($"Fecha de matrícula: {this.FechaMatricula.ToShortDateString()}");
             Console.WriteLine("------------------------------------");
         }
+    
 
 
-        // CRUD
 
-        public static void CrearMatricula()
+// CRUD
+
+public static void CrearMatricula()
         {
             Console.Clear();
             Console.WriteLine("**********Crear Matrícula**********");

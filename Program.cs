@@ -6,7 +6,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        Database.CargarDatos();
+        
         int opcion = 0;
         do
         {

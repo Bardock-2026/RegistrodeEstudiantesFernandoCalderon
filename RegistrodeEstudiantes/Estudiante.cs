@@ -5,15 +5,17 @@ using RegistrodeEstudiantesFernandoCalderon.Generales;
 
 namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 {
+
     public class Estudiante
     {
-        // Campos privados
+        // ATRIBUTOS
         private string nombre;
         private int edad;
         private string carrera;
         private int id; // Principal
+        private List<Matricula> matriculas; // Relación con Matricula
 
-        // Propiedades
+        // PROPIEDADES
         public string Nombre
         {
             get => nombre;
@@ -55,51 +57,56 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
         public int Id { get => id; set => id = value; }
 
-        // Constructor
+        // 🔑 Propiedades de navegación (necesarias para RegistroDBContext)
+        public List<Matricula>? Matriculas { get => matriculas; set => matriculas = value; }
+        public int CursoId { get; set; }              // Clave foránea
+        public Curso? CursoActual { get; set; }       // Relación con Curso
+
+        // CONSTRUCTOR PRINCIPAL
         public Estudiante(string nombre, int edad, string carrera)
         {
             if (nombre == null || nombre.Length == 0)
-            {
                 throw new Exception("El nombre del estudiante no puede estar vacío.");
-            }
 
             if (edad <= 0)
-            {
                 throw new Exception("La edad debe ser mayor que cero.");
-            }
 
             if (carrera == null || carrera.Length == 0)
-            {
                 throw new Exception("La carrera no puede estar vacía.");
-            }
 
             this.Nombre = nombre;
             this.Edad = edad;
             this.Carrera = carrera;
-
-            if (Database.Estudiantes.Count == 0)
-            {
-                this.id = 1;
-            }
-            else
-            {
-                this.id = Database.Estudiantes.Max(x => x.Id) + 1;
-            }
+            this.Matriculas = new List<Matricula>();
         }
 
-        // Método Imprimir
+        // CONSTRUCTOR VACÍO (para EF Core o inicialización manual)
+        public Estudiante()
+        {
+            this.Matriculas = new List<Matricula>();
+        }
+
+        // MÉTODOS
+        public void Presentar()
+        {
+            Console.WriteLine($"Hola, soy {this.Nombre}, tengo {this.Edad} años y estudio {this.Carrera}.");
+        }
+
         public void Imprimir()
         {
             Console.WriteLine($"ID: {this.Id}");
-            Console.WriteLine($"Nombre del estudiante: {this.Nombre}");
+            Console.WriteLine($"Nombre: {this.Nombre}");
             Console.WriteLine($"Edad: {this.Edad}");
             Console.WriteLine($"Carrera: {this.Carrera}");
+            Console.WriteLine($"Curso asignado: {(this.CursoActual != null ? this.CursoActual.Nombre : "Sin curso")}");
+            Console.WriteLine($"Matrículas registradas: {(this.Matriculas != null ? this.Matriculas.Count : 0)}");
             Console.WriteLine("------------------------------------");
         }
+    
 
-        // CRUD
+// CRUD
 
-        public static void CrearEstudiante()
+    public static void CrearEstudiante()
         {
             Console.Clear();
             Console.WriteLine("**********Crear Estudiante**********");

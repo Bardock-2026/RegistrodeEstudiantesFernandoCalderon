@@ -9,7 +9,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
         // Campos privados
         private string nombre;
         private string descripcion;
-        private string duracion; // ahora texto libre
+        private string duracion; // texto libre
         private int id; // Principal
 
         // Propiedades
@@ -54,36 +54,39 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
         public int Id { get => id; set => id = value; }
 
-        // Constructor
+        // 🔑 Propiedades de navegación (necesarias para EF Core y RegistroDBContext)
+        public List<Estudiante>? Estudiantes { get; set; }
+        public List<Profesor>? Profesores { get; set; }
+        public List<Matricula>? Matriculas { get; set; }
+
+        // Constructor principal
         public Curso(string nombre, string descripcion, string duracion)
         {
             if (nombre == null || nombre.Length == 0)
-            {
                 throw new Exception("El nombre del curso no puede estar vacío");
-            }
 
             if (descripcion == null || descripcion.Length == 0)
-            {
                 throw new Exception("La descripción no puede estar vacía");
-            }
 
             if (duracion == null || duracion.Length == 0)
-            {
                 throw new Exception("La duración no puede estar vacía");
-            }
 
             this.Nombre = nombre;
             this.Descripcion = descripcion;
             this.Duracion = duracion;
 
-            if (Database.Cursos.Count == 0)
-            {
-                this.id = 1;
-            }
-            else
-            {
-                this.id = Database.Cursos.Max(x => x.Id) + 1;
-            }
+            // Inicializamos las listas de navegación
+            this.Estudiantes = new List<Estudiante>();
+            this.Profesores = new List<Profesor>();
+            this.Matriculas = new List<Matricula>();
+        }
+
+        // Constructor vacío (para EF Core o inicialización manual)
+        public Curso()
+        {
+            this.Estudiantes = new List<Estudiante>();
+            this.Profesores = new List<Profesor>();
+            this.Matriculas = new List<Matricula>();
         }
 
         // Método Imprimir
@@ -93,13 +96,18 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine($"Nombre del curso: {this.Nombre}");
             Console.WriteLine($"Descripción: {this.Descripcion}");
             Console.WriteLine($"Duración: {this.Duracion}");
+            Console.WriteLine($"Estudiantes registrados: {(this.Estudiantes != null ? this.Estudiantes.Count : 0)}");
+            Console.WriteLine($"Profesores asignados: {(this.Profesores != null ? this.Profesores.Count : 0)}");
+            Console.WriteLine($"Matrículas registradas: {(this.Matriculas != null ? this.Matriculas.Count : 0)}");
             Console.WriteLine("------------------------------------");
         }
+    
 
 
-        // CRUD
 
-        public static void CrearCurso()
+// CRUD
+
+public static void CrearCurso()
         {
             Console.Clear();
             Console.WriteLine("**********Crear Curso**********");

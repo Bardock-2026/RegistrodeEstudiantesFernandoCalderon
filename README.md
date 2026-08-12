@@ -32,3 +32,13 @@ Validaciones con throw new Exception en Estudiante, Profesor, Curso y Matricula.
 - Validaciones numéricas con comparaciones directas (<= 0).
 - Constructor refuerza reglas de las propiedades.
 - CRUD mantiene IDs autoincrementales desde Database.
+
+Agrego clases Estudiante, Profesor, Curso y Matricula con validaciones y propiedades de navegación
+
+Configuro RegistroDBContext con DbSet y relaciones entre entidades
+
+Corrijo relación Estudiante-Matricula cambiando DeleteBehavior de Cascade a Restrict para evitar múltiples cascade paths
+
+Elimino migraciones antiguas y base de datos para regenerar esquema limpio
+
+Genero migración InicialRestrict con relaciones correctas y aplico Update-Database

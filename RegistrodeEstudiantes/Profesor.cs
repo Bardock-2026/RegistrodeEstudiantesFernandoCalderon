@@ -54,37 +54,29 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
         public int Id { get => id; set => id = value; }
 
-        // Constructor
+        // 🔑 Propiedades de navegación (necesarias para RegistroDBContext)
+        public int CursoId { get; set; }
+        public Curso? CursoActual { get; set; }
+
+        // Constructor principal
         public Profesor(string nombre, string materia, int experiencia)
         {
             if (nombre == null || nombre.Length == 0)
-            {
                 throw new Exception("El nombre del profesor no puede estar vacío");
-            }
 
             if (materia == null || materia.Length == 0)
-            {
                 throw new Exception("La materia no puede estar vacía");
-            }
 
             if (experiencia < 0)
-            {
                 throw new Exception("La experiencia no puede ser negativa");
-            }
 
             this.Nombre = nombre;
             this.Materia = materia;
             this.Experiencia = experiencia;
-
-            if (Database.Profesores.Count == 0)
-            {
-                this.id = 1;
-            }
-            else
-            {
-                this.id = Database.Profesores.Max(x => x.Id) + 1;
-            }
         }
+
+        // Constructor vacío (para EF Core o inicialización manual)
+        public Profesor() { }
 
         // Método Imprimir
         public void Imprimir()
@@ -93,13 +85,15 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine($"Nombre del profesor: {this.Nombre}");
             Console.WriteLine($"Materia: {this.Materia}");
             Console.WriteLine($"Años de experiencia: {this.Experiencia}");
+            Console.WriteLine($"Curso asignado: {(this.CursoActual != null ? this.CursoActual.Nombre : "Sin curso")}");
             Console.WriteLine("------------------------------------");
         }
+    
 
 
-        // CRUD
+// CRUD
 
-        public static void CrearProfesor()
+public static void CrearProfesor()
         {
             Console.Clear();
             Console.WriteLine("**********Crear Profesor**********");
