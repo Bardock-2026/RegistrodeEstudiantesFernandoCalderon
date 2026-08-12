@@ -1,7 +1,8 @@
-﻿using System;
+﻿using RegistrodeEstudiantesFernandoCalderon.Datos;
+using RegistrodeEstudiantesFernandoCalderon.Generales;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using RegistrodeEstudiantesFernandoCalderon.Generales;
 namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 {
     public class Curso
@@ -101,13 +102,13 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine($"Matrículas registradas: {(this.Matriculas != null ? this.Matriculas.Count : 0)}");
             Console.WriteLine("------------------------------------");
         }
-    
 
 
 
-// CRUD
 
-public static void CrearCurso()
+        // CRUD
+
+        public static void CrearCurso()
         {
             Console.Clear();
             Console.WriteLine("**********Crear Curso**********");
@@ -122,8 +123,12 @@ public static void CrearCurso()
             string duracion = Console.ReadLine();
 
             Curso objCurso = new Curso(nombre, descripcion, duracion);
-            Database.Cursos.Add(objCurso);
-            Database.GuardarCursos();
+
+            using (var context = new RegistroDBContext())
+            {
+                context.Cursos.Add(objCurso);
+                context.SaveChanges(); // ✅ SQL genera automáticamente el ID
+            }
 
             Console.WriteLine("Curso creado exitosamente!!");
             Console.ReadLine();
@@ -133,10 +138,14 @@ public static void CrearCurso()
         {
             Console.Clear();
             Console.WriteLine("**********Cursos Registrados**********");
-            foreach (Curso curso in Database.Cursos)
+
+            using (var context = new RegistroDBContext())
             {
-                curso.Imprimir();
-                Console.WriteLine("_____________________________________");
+                foreach (Curso curso in context.Cursos.ToList())
+                {
+                    curso.Imprimir();
+                    Console.WriteLine("_____________________________________");
+                }
             }
             Console.ReadLine();
         }
@@ -148,16 +157,20 @@ public static void CrearCurso()
             Console.WriteLine("Ingrese el ID del curso: ");
             int idIngresado = Convert.ToInt32(Console.ReadLine());
 
-            Curso objCurso = Database.Cursos.Find(c => c.Id == idIngresado);
+            using (var context = new RegistroDBContext())
+            {
+                Curso objCurso = context.Cursos
+                    .FirstOrDefault(c => c.Id == idIngresado);
 
-            if (objCurso != null)
-            {
-                Console.WriteLine("Curso Encontrado!!");
-                objCurso.Imprimir();
-            }
-            else
-            {
-                Console.WriteLine("Curso NO encontrado....");
+                if (objCurso != null)
+                {
+                    Console.WriteLine("Curso Encontrado!!");
+                    objCurso.Imprimir();
+                }
+                else
+                {
+                    Console.WriteLine("Curso NO encontrado....");
+                }
             }
             Console.ReadLine();
         }
@@ -169,30 +182,34 @@ public static void CrearCurso()
             Console.WriteLine("Ingrese el ID del curso a actualizar: ");
             int idIngresado = Convert.ToInt32(Console.ReadLine());
 
-            Curso objCurso = Database.Cursos.Find(c => c.Id == idIngresado);
-
-            if (objCurso != null)
+            using (var context = new RegistroDBContext())
             {
-                Console.WriteLine("Curso Encontrado!!!");
-                Console.WriteLine("_____________________________________");
-                objCurso.Imprimir();
-                Console.WriteLine("_____________________________________");
+                Curso objCurso = context.Cursos
+                    .FirstOrDefault(c => c.Id == idIngresado);
 
-                Console.WriteLine("Ingrese el nuevo nombre del curso: ");
-                objCurso.Nombre = Console.ReadLine();
+                if (objCurso != null)
+                {
+                    Console.WriteLine("Curso Encontrado!!!");
+                    Console.WriteLine("_____________________________________");
+                    objCurso.Imprimir();
+                    Console.WriteLine("_____________________________________");
 
-                Console.WriteLine("Ingrese la nueva descripción: ");
-                objCurso.Descripcion = Console.ReadLine();
+                    Console.WriteLine("Ingrese el nuevo nombre del curso: ");
+                    objCurso.Nombre = Console.ReadLine();
 
-                Console.WriteLine("Ingrese la nueva duración (ej: 12 meses, 1 semestre, 40 horas): ");
-                objCurso.Duracion = Console.ReadLine();
-                Database.GuardarCursos();
+                    Console.WriteLine("Ingrese la nueva descripción: ");
+                    objCurso.Descripcion = Console.ReadLine();
 
-                Console.WriteLine("Curso actualizado exitosamente!!");
-            }
-            else
-            {
-                Console.WriteLine("Curso NO encontrado...");
+                    Console.WriteLine("Ingrese la nueva duración (ej: 12 meses, 1 semestre, 40 horas): ");
+                    objCurso.Duracion = Console.ReadLine();
+
+                    context.SaveChanges(); // ✅ Persistencia en SQL
+                    Console.WriteLine("Curso actualizado exitosamente!!");
+                }
+                else
+                {
+                    Console.WriteLine("Curso NO encontrado...");
+                }
             }
             Console.ReadLine();
         }
@@ -204,26 +221,30 @@ public static void CrearCurso()
             Console.WriteLine("Ingrese el ID del curso a eliminar: ");
             int idIngresado = Convert.ToInt32(Console.ReadLine());
 
-            Curso objCurso = Database.Cursos.Find(c => c.Id == idIngresado);
-
-            if (objCurso != null)
+            using (var context = new RegistroDBContext())
             {
-                objCurso.Imprimir();
-                Console.WriteLine("¿Estás seguro que quieres eliminar este curso? S/N:");
-                if (Console.ReadLine().ToUpper() == "S")
+                Curso objCurso = context.Cursos
+                    .FirstOrDefault(c => c.Id == idIngresado);
+
+                if (objCurso != null)
                 {
-                    Database.Cursos.Remove(objCurso);
-                    Database.GuardarCursos();
-                    Console.WriteLine("Curso eliminado exitosamente!!");
+                    objCurso.Imprimir();
+                    Console.WriteLine("¿Estás seguro que quieres eliminar este curso? S/N:");
+                    if (Console.ReadLine().ToUpper() == "S")
+                    {
+                        context.Cursos.Remove(objCurso);
+                        context.SaveChanges(); // ✅ Persistencia en SQL
+                        Console.WriteLine("Curso eliminado exitosamente!!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Operación cancelada!!");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Operación cancelada!!");
+                    Console.WriteLine("Curso NO encontrado!!");
                 }
-            }
-            else
-            {
-                Console.WriteLine("Curso NO encontrado!!");
             }
             Console.ReadLine();
         }

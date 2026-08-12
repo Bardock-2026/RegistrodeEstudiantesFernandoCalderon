@@ -48,3 +48,8 @@ Corrijo CRUD de Estudiante para trabajar con SQL Server usando ID automático y 
 Implemento CRUD de Profesor con SQL Server usando ID automático y operaciones por ID
 
 Creo migración ProfesorCursoOptional para permitir CursoId nullable y corregir relación con Cursos
+
+Implemento CRUD de Curso con SQL Server usando ID automático y operaciones por ID
+
+Verifico que CRUD de Curso funciona correctamente sin errores de integridad referencial
+
