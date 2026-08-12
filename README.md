@@ -42,3 +42,5 @@ Corrijo relación Estudiante-Matricula cambiando DeleteBehavior de Cascade a Res
 Elimino migraciones antiguas y base de datos para regenerar esquema limpio
 
 Genero migración InicialRestrict con relaciones correctas y aplico Update-Database
+
+Corrijo CRUD de Estudiante para trabajar con SQL Server usando ID automático y relación CursoId nullable

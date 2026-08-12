@@ -1,7 +1,8 @@
-﻿using System;
+﻿using RegistrodeEstudiantesFernandoCalderon.Datos;
+using RegistrodeEstudiantesFernandoCalderon.Generales;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using RegistrodeEstudiantesFernandoCalderon.Generales;
 
 namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 {
@@ -59,7 +60,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 
         // 🔑 Propiedades de navegación (necesarias para RegistroDBContext)
         public List<Matricula>? Matriculas { get => matriculas; set => matriculas = value; }
-        public int CursoId { get; set; }              // Clave foránea
+        public int? CursoId { get; set; }              // Clave foránea
         public Curso? CursoActual { get; set; }       // Relación con Curso
 
         // CONSTRUCTOR PRINCIPAL
@@ -102,11 +103,10 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine($"Matrículas registradas: {(this.Matriculas != null ? this.Matriculas.Count : 0)}");
             Console.WriteLine("------------------------------------");
         }
-    
 
-// CRUD
 
-    public static void CrearEstudiante()
+        //CRUD
+        public static void CrearEstudiante()
         {
             Console.Clear();
             Console.WriteLine("**********Crear Estudiante**********");
@@ -121,8 +121,13 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             string carrera = Console.ReadLine();
 
             Estudiante objEstudiante = new Estudiante(nombre, edad, carrera);
-            Database.Estudiantes.Add(objEstudiante);
-            Database.GuardarEstudiantes();
+
+            using (var context = new RegistroDBContext())
+            {
+                context.Estudiantes.Add(objEstudiante);
+                context.SaveChanges(); // ✅ SQL genera automáticamente el ID
+            }
+
             Console.WriteLine("Estudiante creado exitosamente!!");
             Console.ReadLine();
         }
@@ -131,10 +136,14 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
         {
             Console.Clear();
             Console.WriteLine("**********Estudiantes Registrados**********");
-            foreach (Estudiante estudiante in Database.Estudiantes)
+
+            using (var context = new RegistroDBContext())
             {
-                estudiante.Imprimir();
-                Console.WriteLine("_____________________________________");
+                foreach (Estudiante estudiante in context.Estudiantes.ToList())
+                {
+                    estudiante.Imprimir();
+                    Console.WriteLine("_____________________________________");
+                }
             }
             Console.ReadLine();
         }
@@ -146,16 +155,20 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine("Ingrese el ID del estudiante: ");
             int idIngresado = Convert.ToInt32(Console.ReadLine());
 
-            Estudiante objEstudiante = Database.Estudiantes.Find(e => e.Id == idIngresado);
+            using (var context = new RegistroDBContext())
+            {
+                Estudiante objEstudiante = context.Estudiantes
+                    .FirstOrDefault(e => e.Id == idIngresado);
 
-            if (objEstudiante != null)
-            {
-                Console.WriteLine("Estudiante Encontrado!!");
-                objEstudiante.Imprimir();
-            }
-            else
-            {
-                Console.WriteLine("Estudiante NO encontrado....");
+                if (objEstudiante != null)
+                {
+                    Console.WriteLine("Estudiante Encontrado!!");
+                    objEstudiante.Imprimir();
+                }
+                else
+                {
+                    Console.WriteLine("Estudiante NO encontrado....");
+                }
             }
             Console.ReadLine();
         }
@@ -167,30 +180,34 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine("Ingrese el ID del estudiante a actualizar: ");
             int idIngresado = Convert.ToInt32(Console.ReadLine());
 
-            Estudiante objEstudiante = Database.Estudiantes.Find(e => e.Id == idIngresado);
-
-            if (objEstudiante != null)
+            using (var context = new RegistroDBContext())
             {
-                Console.WriteLine("Estudiante Encontrado!!!");
-                Console.WriteLine("_____________________________________");
-                objEstudiante.Imprimir();
-                Console.WriteLine("_____________________________________");
+                Estudiante objEstudiante = context.Estudiantes
+                    .FirstOrDefault(e => e.Id == idIngresado);
 
-                Console.WriteLine("Ingrese el nuevo nombre del estudiante: ");
-                objEstudiante.Nombre = Console.ReadLine();
+                if (objEstudiante != null)
+                {
+                    Console.WriteLine("Estudiante Encontrado!!!");
+                    Console.WriteLine("_____________________________________");
+                    objEstudiante.Imprimir();
+                    Console.WriteLine("_____________________________________");
 
-                Console.WriteLine("Ingrese la nueva edad del estudiante: ");
-                objEstudiante.Edad = Convert.ToInt32(Console.ReadLine());
+                    Console.WriteLine("Ingrese el nuevo nombre del estudiante: ");
+                    objEstudiante.Nombre = Console.ReadLine();
 
-                Console.WriteLine("Ingrese la nueva carrera del estudiante: ");
-                objEstudiante.Carrera = Console.ReadLine();
-                Database.GuardarEstudiantes();
+                    Console.WriteLine("Ingrese la nueva edad del estudiante: ");
+                    objEstudiante.Edad = Convert.ToInt32(Console.ReadLine());
 
-                Console.WriteLine("Estudiante actualizado exitosamente!!");
-            }
-            else
-            {
-                Console.WriteLine("Estudiante NO encontrado...");
+                    Console.WriteLine("Ingrese la nueva carrera del estudiante: ");
+                    objEstudiante.Carrera = Console.ReadLine();
+
+                    context.SaveChanges(); // ✅ Persistencia en SQL
+                    Console.WriteLine("Estudiante actualizado exitosamente!!");
+                }
+                else
+                {
+                    Console.WriteLine("Estudiante NO encontrado...");
+                }
             }
             Console.ReadLine();
         }
@@ -202,26 +219,30 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine("Ingrese el ID del estudiante a eliminar: ");
             int idIngresado = Convert.ToInt32(Console.ReadLine());
 
-            Estudiante objEstudiante = Database.Estudiantes.Find(e => e.Id == idIngresado);
-
-            if (objEstudiante != null)
+            using (var context = new RegistroDBContext())
             {
-                objEstudiante.Imprimir();
-                Console.WriteLine("¿Estás seguro que quieres eliminar este estudiante? S/N:");
-                if (Console.ReadLine().ToUpper() == "S")
+                Estudiante objEstudiante = context.Estudiantes
+                    .FirstOrDefault(e => e.Id == idIngresado);
+
+                if (objEstudiante != null)
                 {
-                    Database.Estudiantes.Remove(objEstudiante);
-                    Database.GuardarEstudiantes();
-                    Console.WriteLine("Estudiante eliminado exitosamente!!");
+                    objEstudiante.Imprimir();
+                    Console.WriteLine("¿Estás seguro que quieres eliminar este estudiante? S/N:");
+                    if (Console.ReadLine().ToUpper() == "S")
+                    {
+                        context.Estudiantes.Remove(objEstudiante);
+                        context.SaveChanges(); // ✅ Persistencia en SQL
+                        Console.WriteLine("Estudiante eliminado exitosamente!!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Operación cancelada!!");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Operación cancelada!!");
+                    Console.WriteLine("Estudiante NO encontrado!!");
                 }
-            }
-            else
-            {
-                Console.WriteLine("Estudiante NO encontrado!!");
             }
             Console.ReadLine();
         }
