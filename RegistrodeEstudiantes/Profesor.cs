@@ -1,7 +1,8 @@
-﻿using System;
+﻿using RegistrodeEstudiantesFernandoCalderon.Datos;
+using RegistrodeEstudiantesFernandoCalderon.Generales;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using RegistrodeEstudiantesFernandoCalderon.Generales;
 namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
 {
     public class Profesor
@@ -55,7 +56,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
         public int Id { get => id; set => id = value; }
 
         // 🔑 Propiedades de navegación (necesarias para RegistroDBContext)
-        public int CursoId { get; set; }
+        public int? CursoId { get; set; }
         public Curso? CursoActual { get; set; }
 
         // Constructor principal
@@ -88,12 +89,12 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine($"Curso asignado: {(this.CursoActual != null ? this.CursoActual.Nombre : "Sin curso")}");
             Console.WriteLine("------------------------------------");
         }
-    
 
 
-// CRUD
 
-public static void CrearProfesor()
+        // CRUD
+
+        public static void CrearProfesor()
         {
             Console.Clear();
             Console.WriteLine("**********Crear Profesor**********");
@@ -108,8 +109,12 @@ public static void CrearProfesor()
             int experiencia = Convert.ToInt32(Console.ReadLine());
 
             Profesor objProfesor = new Profesor(nombre, materia, experiencia);
-            Database.Profesores.Add(objProfesor);
-            Database.GuardarProfesores();
+
+            using (var context = new RegistroDBContext())
+            {
+                context.Profesores.Add(objProfesor);
+                context.SaveChanges(); // ✅ SQL genera automáticamente el ID
+            }
 
             Console.WriteLine("Profesor creado exitosamente!!");
             Console.ReadLine();
@@ -119,10 +124,14 @@ public static void CrearProfesor()
         {
             Console.Clear();
             Console.WriteLine("**********Profesores Registrados**********");
-            foreach (Profesor profesor in Database.Profesores)
+
+            using (var context = new RegistroDBContext())
             {
-                profesor.Imprimir();
-                Console.WriteLine("_____________________________________");
+                foreach (Profesor profesor in context.Profesores.ToList())
+                {
+                    profesor.Imprimir();
+                    Console.WriteLine("_____________________________________");
+                }
             }
             Console.ReadLine();
         }
@@ -134,16 +143,20 @@ public static void CrearProfesor()
             Console.WriteLine("Ingrese el ID del profesor: ");
             int idIngresado = Convert.ToInt32(Console.ReadLine());
 
-            Profesor objProfesor = Database.Profesores.Find(p => p.Id == idIngresado);
+            using (var context = new RegistroDBContext())
+            {
+                Profesor objProfesor = context.Profesores
+                    .FirstOrDefault(p => p.Id == idIngresado);
 
-            if (objProfesor != null)
-            {
-                Console.WriteLine("Profesor Encontrado!!");
-                objProfesor.Imprimir();
-            }
-            else
-            {
-                Console.WriteLine("Profesor NO encontrado....");
+                if (objProfesor != null)
+                {
+                    Console.WriteLine("Profesor Encontrado!!");
+                    objProfesor.Imprimir();
+                }
+                else
+                {
+                    Console.WriteLine("Profesor NO encontrado....");
+                }
             }
             Console.ReadLine();
         }
@@ -155,30 +168,34 @@ public static void CrearProfesor()
             Console.WriteLine("Ingrese el ID del profesor a actualizar: ");
             int idIngresado = Convert.ToInt32(Console.ReadLine());
 
-            Profesor objProfesor = Database.Profesores.Find(p => p.Id == idIngresado);
-
-            if (objProfesor != null)
+            using (var context = new RegistroDBContext())
             {
-                Console.WriteLine("Profesor Encontrado!!!");
-                Console.WriteLine("_____________________________________");
-                objProfesor.Imprimir();
-                Console.WriteLine("_____________________________________");
+                Profesor objProfesor = context.Profesores
+                    .FirstOrDefault(p => p.Id == idIngresado);
 
-                Console.WriteLine("Ingrese el nuevo nombre del profesor: ");
-                objProfesor.Nombre = Console.ReadLine();
+                if (objProfesor != null)
+                {
+                    Console.WriteLine("Profesor Encontrado!!!");
+                    Console.WriteLine("_____________________________________");
+                    objProfesor.Imprimir();
+                    Console.WriteLine("_____________________________________");
 
-                Console.WriteLine("Ingrese la nueva materia: ");
-                objProfesor.Materia = Console.ReadLine();
+                    Console.WriteLine("Ingrese el nuevo nombre del profesor: ");
+                    objProfesor.Nombre = Console.ReadLine();
 
-                Console.WriteLine("Ingrese los nuevos años de experiencia: ");
-                objProfesor.Experiencia = Convert.ToInt32(Console.ReadLine());
-                Database.GuardarProfesores();
+                    Console.WriteLine("Ingrese la nueva materia: ");
+                    objProfesor.Materia = Console.ReadLine();
 
-                Console.WriteLine("Profesor actualizado exitosamente!!");
-            }
-            else
-            {
-                Console.WriteLine("Profesor NO encontrado...");
+                    Console.WriteLine("Ingrese los nuevos años de experiencia: ");
+                    objProfesor.Experiencia = Convert.ToInt32(Console.ReadLine());
+
+                    context.SaveChanges(); // ✅ Persistencia en SQL
+                    Console.WriteLine("Profesor actualizado exitosamente!!");
+                }
+                else
+                {
+                    Console.WriteLine("Profesor NO encontrado...");
+                }
             }
             Console.ReadLine();
         }
@@ -190,26 +207,30 @@ public static void CrearProfesor()
             Console.WriteLine("Ingrese el ID del profesor a eliminar: ");
             int idIngresado = Convert.ToInt32(Console.ReadLine());
 
-            Profesor objProfesor = Database.Profesores.Find(p => p.Id == idIngresado);
-
-            if (objProfesor != null)
+            using (var context = new RegistroDBContext())
             {
-                objProfesor.Imprimir();
-                Console.WriteLine("¿Estás seguro que quieres eliminar este profesor? S/N:");
-                if (Console.ReadLine().ToUpper() == "S")
+                Profesor objProfesor = context.Profesores
+                    .FirstOrDefault(p => p.Id == idIngresado);
+
+                if (objProfesor != null)
                 {
-                    Database.Profesores.Remove(objProfesor);
-                    Database.GuardarProfesores();
-                    Console.WriteLine("Profesor eliminado exitosamente!!");
+                    objProfesor.Imprimir();
+                    Console.WriteLine("¿Estás seguro que quieres eliminar este profesor? S/N:");
+                    if (Console.ReadLine().ToUpper() == "S")
+                    {
+                        context.Profesores.Remove(objProfesor);
+                        context.SaveChanges(); // ✅ Persistencia en SQL
+                        Console.WriteLine("Profesor eliminado exitosamente!!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Operación cancelada!!");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Operación cancelada!!");
+                    Console.WriteLine("Profesor NO encontrado!!");
                 }
-            }
-            else
-            {
-                Console.WriteLine("Profesor NO encontrado!!");
             }
             Console.ReadLine();
         }
