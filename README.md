@@ -22,3 +22,13 @@ Añadidas llamadas a persistencia en Database para todas las entidades del Regis
 - Clase Matricula: se agregó Database.GuardarMatriculas() al crear/modificar registros
 
 Con este cambio, cada operación CRUD asegura la persistencia inmediata en el archivo JSON global.
+
+Fernando Calderon 
+12/08/2026
+Validaciones con throw new Exception en Estudiante, Profesor, Curso y Matricula. 
+- Eliminado uso de Console.WriteLine en setters.
+- Eliminado uso de IsNullOrEmpty e IsNullOrWhiteSpace.
+- Validaciones consistentes con value == null || value.Length == 0 para cadenas.
+- Validaciones numéricas con comparaciones directas (<= 0).
+- Constructor refuerza reglas de las propiedades.
+- CRUD mantiene IDs autoincrementales desde Database.

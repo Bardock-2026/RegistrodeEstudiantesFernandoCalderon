@@ -18,10 +18,9 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             get => nombre;
             set
             {
-                if (string.IsNullOrEmpty(value))
+                if (value == null || value.Length == 0)
                 {
-                    Console.WriteLine("El nombre del curso no puede estar vacío.");
-                    return;
+                    throw new Exception("El nombre del curso no puede estar vacío.");
                 }
                 nombre = value;
             }
@@ -32,10 +31,9 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             get => descripcion;
             set
             {
-                if (string.IsNullOrEmpty(value))
+                if (value == null || value.Length == 0)
                 {
-                    Console.WriteLine("La descripción no puede estar vacía.");
-                    return;
+                    throw new Exception("La descripción no puede estar vacía.");
                 }
                 descripcion = value;
             }
@@ -46,10 +44,9 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             get => duracion;
             set
             {
-                if (string.IsNullOrEmpty(value))
+                if (value == null || value.Length == 0)
                 {
-                    Console.WriteLine("La duración no puede estar vacía.");
-                    return;
+                    throw new Exception("La duración no puede estar vacía.");
                 }
                 duracion = value;
             }
@@ -60,14 +57,20 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
         // Constructor
         public Curso(string nombre, string descripcion, string duracion)
         {
-            if (string.IsNullOrEmpty(nombre))
+            if (nombre == null || nombre.Length == 0)
+            {
                 throw new Exception("El nombre del curso no puede estar vacío");
+            }
 
-            if (string.IsNullOrEmpty(descripcion))
+            if (descripcion == null || descripcion.Length == 0)
+            {
                 throw new Exception("La descripción no puede estar vacía");
+            }
 
-            if (string.IsNullOrEmpty(duracion))
+            if (duracion == null || duracion.Length == 0)
+            {
                 throw new Exception("La duración no puede estar vacía");
+            }
 
             this.Nombre = nombre;
             this.Descripcion = descripcion;
@@ -92,6 +95,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine($"Duración: {this.Duracion}");
             Console.WriteLine("------------------------------------");
         }
+
 
         // CRUD
 

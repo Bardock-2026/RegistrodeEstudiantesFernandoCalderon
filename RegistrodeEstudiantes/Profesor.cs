@@ -18,10 +18,9 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             get => nombre;
             set
             {
-                if (value == null || value == "")
+                if (value == null || value.Length == 0)
                 {
-                    Console.WriteLine("El nombre del profesor no puede estar vacío.");
-                    return;
+                    throw new Exception("El nombre del profesor no puede estar vacío.");
                 }
                 nombre = value;
             }
@@ -32,10 +31,9 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             get => materia;
             set
             {
-                if (value == null || value == "")
+                if (value == null || value.Length == 0)
                 {
-                    Console.WriteLine("La materia no puede estar vacía.");
-                    return;
+                    throw new Exception("La materia no puede estar vacía.");
                 }
                 materia = value;
             }
@@ -48,8 +46,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             {
                 if (value < 0)
                 {
-                    Console.WriteLine("La experiencia no puede ser negativa.");
-                    return;
+                    throw new Exception("La experiencia no puede ser negativa.");
                 }
                 experiencia = value;
             }
@@ -98,6 +95,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine($"Años de experiencia: {this.Experiencia}");
             Console.WriteLine("------------------------------------");
         }
+
 
         // CRUD
 

@@ -19,10 +19,9 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             get => nombre;
             set
             {
-                if (value == null || value == "")
+                if (value == null || value.Length == 0)
                 {
-                    Console.WriteLine("El nombre del estudiante no puede estar vacío.");
-                    return;
+                    throw new Exception("El nombre del estudiante no puede estar vacío.");
                 }
                 nombre = value;
             }
@@ -35,8 +34,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             {
                 if (value <= 0)
                 {
-                    Console.WriteLine("La edad debe ser mayor que cero.");
-                    return;
+                    throw new Exception("La edad debe ser mayor que cero.");
                 }
                 edad = value;
             }
@@ -47,10 +45,9 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             get => carrera;
             set
             {
-                if (value == null || value == "")
+                if (value == null || value.Length == 0)
                 {
-                    Console.WriteLine("La carrera no puede estar vacía.");
-                    return;
+                    throw new Exception("La carrera no puede estar vacía.");
                 }
                 carrera = value;
             }
@@ -63,17 +60,17 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
         {
             if (nombre == null || nombre.Length == 0)
             {
-                throw new Exception("El nombre del estudiante no puede estar vacío");
+                throw new Exception("El nombre del estudiante no puede estar vacío.");
             }
 
             if (edad <= 0)
             {
-                throw new Exception("La edad debe ser mayor que cero");
+                throw new Exception("La edad debe ser mayor que cero.");
             }
 
             if (carrera == null || carrera.Length == 0)
             {
-                throw new Exception("La carrera no puede estar vacía");
+                throw new Exception("La carrera no puede estar vacía.");
             }
 
             this.Nombre = nombre;

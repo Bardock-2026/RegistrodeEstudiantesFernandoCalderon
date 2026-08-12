@@ -20,8 +20,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             {
                 if (value <= 0)
                 {
-                    Console.WriteLine("El ID del estudiante debe ser mayor que cero.");
-                    return;
+                    throw new Exception("El ID del estudiante debe ser mayor que cero.");
                 }
                 idEstudiante = value;
             }
@@ -34,8 +33,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             {
                 if (value <= 0)
                 {
-                    Console.WriteLine("El ID del curso debe ser mayor que cero.");
-                    return;
+                    throw new Exception("El ID del curso debe ser mayor que cero.");
                 }
                 idCurso = value;
             }
@@ -93,6 +91,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine($"Fecha de matrícula: {this.FechaMatricula.ToShortDateString()}");
             Console.WriteLine("------------------------------------");
         }
+
 
         // CRUD
 
