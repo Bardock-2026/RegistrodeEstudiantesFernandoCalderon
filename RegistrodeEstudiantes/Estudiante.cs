@@ -116,11 +116,18 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine("Ingrese la carrera del estudiante: ");
             string carrera = Console.ReadLine();
 
-            Console.WriteLine("Ingrese el ID del curso asignado: ");
-            int cursoId = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("¿Desea asignar un curso ahora? (s/n): ");
+            string respuesta = Console.ReadLine();
+
+            int? cursoId = null;
+            if (respuesta?.ToLower() == "s")
+            {
+                Console.WriteLine("Ingrese el ID del curso asignado: ");
+                cursoId = Convert.ToInt32(Console.ReadLine());
+            }
 
             Estudiante objEstudiante = new Estudiante(nombre, edad, carrera);
-            objEstudiante.CursoId = cursoId;   // 🔑 asignar curso
+            objEstudiante.CursoId = cursoId;   // 🔑 puede ser null
 
             using (var context = new RegistroDBContext())
             {

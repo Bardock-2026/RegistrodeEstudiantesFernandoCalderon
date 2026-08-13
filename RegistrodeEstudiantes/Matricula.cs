@@ -124,11 +124,18 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
                     return;
                 }
 
+                // Crear matrícula
                 Matricula objMatricula = new Matricula(idEstudiante, idCurso, fecha);
                 context.Matriculas.Add(objMatricula);
-                context.SaveChanges(); // ✅ Persistencia en SQL
 
-                Console.WriteLine("Matrícula creada exitosamente!!");
+                // 🔑 Actualizar el curso del estudiante
+                estudiante.CursoId = idCurso;
+                context.Estudiantes.Update(estudiante);
+
+                // Guardar cambios en la BD
+                context.SaveChanges();
+
+                Console.WriteLine("Matrícula creada exitosamente y curso asignado al estudiante!!");
             }
             Console.ReadLine();
         }

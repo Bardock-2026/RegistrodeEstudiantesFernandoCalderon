@@ -66,5 +66,9 @@ CRUD ListarProfesores actualizado con Include(p => p.Curso) para mostrar curso a
 CRUD ListarEstudiantes actualizado con Include(e => e.Curso) y ThenInclude(m => m.Curso) para mostrar curso y matrículas
 Migración AjusteCursoRelaciones creada para sincronizar tablas con nuevas propiedades y claves foráneas
 Ajustado método Imprimir en clase Matricula para mostrar nombre e ID de Estudiante y Curso junto al listado de matrículas
-
+Cambios en Registro de Estudiantes:
+- Estudiante ahora permite CursoId opcional (nullable).
+- Configuración en OnModelCreating con IsRequired(false) para relación Curso-Estudiante.
+- CrearMatricula actualiza automáticamente el CursoId del estudiante al matricularlo.
+- ListarMatriculas usa Include para cargar Estudiante y Curso relacionados."
 

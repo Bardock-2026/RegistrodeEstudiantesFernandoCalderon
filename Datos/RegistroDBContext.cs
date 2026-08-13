@@ -29,8 +29,9 @@ namespace RegistrodeEstudiantesFernandoCalderon.Datos
             // Relación 1 a muchos entre Curso y Estudiante
             modelBuilder.Entity<Curso>()
                 .HasMany(c => c.Estudiantes)
-                .WithOne(e => e.Curso)   // ✅ antes estaba CursoActual
+                .WithOne(e => e.Curso)
                 .HasForeignKey(e => e.CursoId)
+                .IsRequired(false)   // ✅ curso opcional
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Relación 1 a muchos entre Curso y Profesor
