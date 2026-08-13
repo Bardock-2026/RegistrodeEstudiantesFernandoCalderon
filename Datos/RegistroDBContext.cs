@@ -39,6 +39,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.Datos
                 .HasMany(c => c.Profesores)
                 .WithOne(p => p.Curso)   // ✅ antes estaba CursoActual
                 .HasForeignKey(p => p.CursoId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Relación 1 a muchos entre Curso y Matricula

@@ -108,19 +108,31 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             Console.WriteLine("Ingrese los años de experiencia: ");
             int experiencia = Convert.ToInt32(Console.ReadLine());
 
-            Console.WriteLine("Ingrese el ID del curso asignado: ");
-            int cursoId = Convert.ToInt32(Console.ReadLine());
+            // 🔑 Preguntar si quiere asignar curso
+            Console.WriteLine("¿Desea asignar un curso al profesor? (s/n): ");
+            string respuesta = Console.ReadLine()?.ToLower();
+
+            int? cursoId = null;
+            if (respuesta == "s")
+            {
+                Console.WriteLine("Ingrese el ID del curso asignado: ");
+                cursoId = Convert.ToInt32(Console.ReadLine());
+            }
 
             Profesor objProfesor = new Profesor(nombre, materia, experiencia);
-            objProfesor.CursoId = cursoId;   // 🔑 asignar curso
+            objProfesor.CursoId = cursoId;   // Puede ser null si no asigna curso
 
             using (var context = new RegistroDBContext())
             {
                 context.Profesores.Add(objProfesor);
-                context.SaveChanges(); // ✅ SQL genera automáticamente el ID
+                context.SaveChanges(); // ✅ Persistencia en SQL
             }
 
-            Console.WriteLine("Profesor creado exitosamente con curso asignado!!");
+            if (cursoId.HasValue)
+                Console.WriteLine("Profesor creado exitosamente con curso asignado!!");
+            else
+                Console.WriteLine("Profesor creado exitosamente sin curso asignado!!");
+
             Console.ReadLine();
         }
 
@@ -179,6 +191,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             using (var context = new RegistroDBContext())
             {
                 Profesor objProfesor = context.Profesores
+                    .Include(p => p.Curso) // para mostrar curso actual
                     .FirstOrDefault(p => p.Id == idIngresado);
 
                 if (objProfesor != null)
@@ -197,6 +210,37 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
                     Console.WriteLine("Ingrese los nuevos años de experiencia: ");
                     objProfesor.Experiencia = Convert.ToInt32(Console.ReadLine());
 
+                    // 🔑 Preguntar si quiere asignar/cambiar/quitar curso
+                    Console.WriteLine("¿Desea asignar o cambiar curso al profesor? (s/n): ");
+                    string respuesta = Console.ReadLine()?.ToLower();
+
+                    if (respuesta == "s")
+                    {
+                        Console.WriteLine("Ingrese el ID del curso: ");
+                        int cursoId = Convert.ToInt32(Console.ReadLine());
+
+                        var curso = context.Cursos.FirstOrDefault(c => c.Id == cursoId);
+                        if (curso != null)
+                        {
+                            objProfesor.CursoId = cursoId;
+                            Console.WriteLine($"Curso asignado: {curso.Nombre}");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Curso no encontrado, no se asignó.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("¿Desea quitar el curso actual del profesor? (s/n): ");
+                        string quitar = Console.ReadLine()?.ToLower();
+                        if (quitar == "s")
+                        {
+                            objProfesor.CursoId = null; // 🔑 dejar sin curso
+                            Console.WriteLine("Curso eliminado del profesor.");
+                        }
+                    }
+
                     context.SaveChanges(); // ✅ Persistencia en SQL
                     Console.WriteLine("Profesor actualizado exitosamente!!");
                 }
@@ -207,6 +251,7 @@ namespace RegistrodeEstudiantesFernandoCalderon.RegistrodeEstudiantes
             }
             Console.ReadLine();
         }
+
 
         public static void EliminarProfesor()
         {

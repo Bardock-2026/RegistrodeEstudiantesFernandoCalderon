@@ -70,5 +70,12 @@ Cambios en Registro de Estudiantes:
 - Estudiante ahora permite CursoId opcional (nullable).
 - Configuración en OnModelCreating con IsRequired(false) para relación Curso-Estudiante.
 - CrearMatricula actualiza automáticamente el CursoId del estudiante al matricularlo.
-- ListarMatriculas usa Include para cargar Estudiante y Curso relacionados."
+- ListarMatriculas usa Include para cargar Estudiante y Curso relacionados.
+
+ActualizarProfesor mejorado:
+- Se agregó la opción de asignar curso al profesor durante la actualización.
+- Se permite cambiar el curso existente por otro.
+- Se agregó la opción de quitar el curso actual (CursoId = null).
+- Se mantiene la validación de existencia de curso antes de asignar.
+- Se muestra el curso actual del profesor al imprimir."
 

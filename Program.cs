@@ -57,32 +57,32 @@ class Program
             switch (opcion)
             {
                 // --- ESTUDIANTE ---
-                case 1: Estudiante.CrearEstudiante(); Database.GuardarEstudiantes(); break;
+                case 1: Estudiante.CrearEstudiante(); break;
                 case 2: Estudiante.ListarEstudiantes(); break;
                 case 3: Estudiante.BuscarEstudiante(); break;
-                case 4: Estudiante.ActualizarEstudiante(); Database.GuardarEstudiantes(); break;
-                case 5: Estudiante.EliminarEstudiante(); Database.GuardarEstudiantes(); break;
+                case 4: Estudiante.ActualizarEstudiante(); break;
+                case 5: Estudiante.EliminarEstudiante(); break;
 
                 // --- PROFESOR ---
-                case 6: Profesor.CrearProfesor(); Database.GuardarProfesores(); break;
+                case 6: Profesor.CrearProfesor(); break;
                 case 7: Profesor.ListarProfesores(); break;
                 case 8: Profesor.BuscarProfesor(); break;
-                case 9: Profesor.ActualizarProfesor(); Database.GuardarProfesores(); break;
-                case 10: Profesor.EliminarProfesor(); Database.GuardarProfesores(); break;
+                case 9: Profesor.ActualizarProfesor(); break;
+                case 10: Profesor.EliminarProfesor(); break;
 
                 // --- CURSO ---
-                case 11: Curso.CrearCurso(); Database.GuardarCursos(); break;
+                case 11: Curso.CrearCurso(); break;
                 case 12: Curso.ListarCursos(); break;
                 case 13: Curso.BuscarCurso(); break;
-                case 14: Curso.ActualizarCurso(); Database.GuardarCursos(); break;
-                case 15: Curso.EliminarCurso(); Database.GuardarCursos(); break;
+                case 14: Curso.ActualizarCurso(); break;
+                case 15: Curso.EliminarCurso(); break;
 
                 // --- MATRÍCULA ---
-                case 16: Matricula.CrearMatricula(); Database.GuardarMatriculas(); break;
+                case 16: Matricula.CrearMatricula(); break;
                 case 17: Matricula.ListarMatriculas(); break;
                 case 18: Matricula.BuscarMatricula(); break;
-                case 19: Matricula.ActualizarMatricula(); Database.GuardarMatriculas(); break;
-                case 20: Matricula.EliminarMatricula(); Database.GuardarMatriculas(); break;
+                case 19: Matricula.ActualizarMatricula(); break;
+                case 20: Matricula.EliminarMatricula(); break;
 
                 case 0: Console.WriteLine("👋 Saliendo del sistema..."); break;
                 default: Console.WriteLine("⚠️ Opción inválida."); Console.ReadLine(); break;
